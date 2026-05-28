@@ -1,0 +1,20 @@
+#!/bin/bash -x
+#
+# redundant input per subject
+
+subid=$1
+
+# define DSLOCKFILE, DATALAD & GIT ENV for participant_job
+export DSLOCKFILE=/p/project1/icei-hbp-00000000004/QCworkflow/openneuro-qc/openneuro-mriqc_local/ds004917-mriqc/.SLURM_datalad_lock DATALAD_GET_SUBDATASET__SOURCE__CANDIDATE__102container="ria+file:///p/data1/inm7/containerstores#{id}" DATALAD_GET_SUBDATASET__SOURCE__CANDIDATE__200ds004917=/p/scratch/icei-hbp-00000000004/STAGE/OpenNeuro/ds004917.git GIT_AUTHOR_NAME=$(git config user.name) GIT_AUTHOR_EMAIL=$(git config user.email) JOBID=ds004917_${subid:4}.${SLURM_JOB_ID} REPRONIM_USE_DUCT=1
+
+# use subject specific folder
+mkdir /local/nvme/${JOBID}
+cd /local/nvme/${JOBID}
+
+# run things
+/p/project1/icei-hbp-00000000004/QCworkflow/openneuro-qc/openneuro-mriqc_local/ds004917-mriqc/code/participant_job ria+file:///p/project1/icei-hbp-00000000004/ria-qcworkflow/inputstore#35382e2c-a737-42e1-b8a2-607a2b07279c https://hub.trr379.de/f.hoffstaedter/ds004917-mriqc ${subid} >/p/project1/icei-hbp-00000000004/QCworkflow/openneuro-qc/openneuro-mriqc_local/ds004917-mriqc/logs/${JOBID}.out 2>/p/project1/icei-hbp-00000000004/QCworkflow/openneuro-qc/openneuro-mriqc_local/ds004917-mriqc/logs/${JOBID}.err
+
+cd /local/nvme/
+chmod 777 -R /local/nvme/${JOBID}
+rm -fr /local/nvme/${JOBID}
+
